@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You & Me - Social Network</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .post-box, .post-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        textarea { width: 100%; height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; resize: none; }
+        button { background-color: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        .author { font-weight: bold; color: #333; margin-bottom: 5px; }
+        .date { font-size: 0.8em; color: #777; }
+        .content { margin: 10px 0; color: #444; }
+        .like-btn { text-decoration: none; color: #e0245e; font-weight: bold; display: inline-block; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="text-align: center; color: #333;">You & Me</h2>
+
+    <!-- Form ya Kuandika Post Mpya -->
+    {% if user.is_authenticated %}
+    <div class="post-box">
+        <form method="POST" action="{% url 'home' %}">
+            {% csrf_token %}
+            <textarea name="content" placeholder="Unafikiria nini leo, {{ user.username }}?" required></textarea>
+            <br><br>
+            <button type="submit">Post</button>
+        </form>
+    </div>
+    {% else %}
+    <p style="text-align: center;"><a href="/admin">Ingia (Login)</a> ili kuweza kupost na kulike.</p>
+    {% endif %}
+
+    <!-- Orodha ya Posts Zote -->
+    {% for post in posts %}
+    <div class="post-card">
+        <div class="author">@{{ post.author.username }}</div>
+        <div class="date">{{ post.created_at|date:"d M Y, H:i" }}</div>
+        <div class="content">{{ post.content }}</div>
+        
+        <hr style="border: 0; border-top: 1px solid #eee;">
+        
+        <!-- Kitufe cha Like -->
+        <a href="{% url 'like_post' post.id %}" class="like-btn">
+            ❤️ {{ post.total_likes }} Likes
+        </a>
+    </div>
+    {% empty %}
+    <p style="text-align: center;">Bado hakuna post yoyote. Kuwa wa kwanza kupost!</p>
+    {% endfor %}
+</div>
+
+</body>
+</html>
